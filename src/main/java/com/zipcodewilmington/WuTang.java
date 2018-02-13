@@ -23,8 +23,8 @@ public class WuTang {
     public WuTang() {
         rateMap = new HashMap<Currency, Double>();
         rateMap.put(Currency.USD, 1.00);
-        //rateMap.put(Currency.EUR, 0.94);
-        rateMap.put(Currency.EUR, 0.81);
+        rateMap.put(Currency.EUR, 0.94);
+        //rateMap.put(Currency.EUR, 0.81);
         rateMap.put(Currency.STR, 0.82);
         rateMap.put(Currency.RUP, 68.32);
         rateMap.put(Currency.AUS, 1.35);
@@ -37,13 +37,24 @@ public class WuTang {
 
     }
 
-    // returns USD
-    private Double fxToUSD(Currency fx, Double value) {
-        return rateMap.get(fx) * value;
+    private Double scale(Double d) {
+        int ix = (int)(d * 100.0); // scale it
+        return ((double)ix)/100.0;
     }
 
     // returns USD
+    private Double fxToUSD(Currency fx, Double value) {
+        return this.scale(rateMap.get(fx) * value);
+    }
+
+    // returns fx
     private Double usdToFX(Currency fx, Double value) {
-        return rateMap.get(fx) / value;
+        return this.scale((1/rateMap.get(fx)) * value);
+    }
+
+    public Double convert(Currency from, Double value, Currency to) {
+        if (from.equals(to)) return value;
+        Double intermediateResult = this.fxToUSD(from, value);
+        return this.usdToFX(to, value);
     }
 }
